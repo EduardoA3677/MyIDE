@@ -132,7 +132,7 @@ prerequisites() {
     yay -S cargo go python-pip pnpm
     ;;
   "Ubuntu")
-    curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+    curl -sL https://deb.nodesource.com/setup_21.x | sudo -E bash -
     sudo apt -y install golang cargo python3-pip python-is-python3 nodejs
     ;;
   esac
