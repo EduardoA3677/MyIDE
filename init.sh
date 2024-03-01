@@ -119,13 +119,7 @@ prerequisites() {
   go env -w GOPROXY=https://goproxy.io,direct
   go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOSUMDB="sum.golang.org"
 
-  curl https://sh.rustup.rs -sSf | sh
-  source "$HOME/.cargo/env"
-  source "$HOME/.profile"
-  source "$HOME/.bashrc"
   sudo npm install -g npm@10.5.0
-  curl -fsSL https://get.pnpm.io/install.sh | sh -
-  source /home/eduardo/.bashrc
   npm config set prefix ~/.local
   pnpm config set pnpm-prefix ~/.local
   pnpm config set global-dir ~/.local/bin
