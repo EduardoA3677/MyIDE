@@ -372,7 +372,6 @@ main() {
     mkdir -p ~/.config/
 
     sudo_without_passwd
-    change_mirror_source
     prerequisites
     ssh_and_git_config
     install_docker
