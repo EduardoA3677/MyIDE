@@ -114,7 +114,9 @@ prerequisites() {
     ;;
   esac
 
-  go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOPROXY=off
+  go env -w GOPROXY=https://goproxy.io,direct
+  go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOSUMDB=sum.golang.org
+
   curl https://sh.rustup.rs -sSf | sh
   source ~/.bashrc
   sudo npm install -g npm@10.5.0
