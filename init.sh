@@ -115,7 +115,7 @@ prerequisites() {
   esac
 
   go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOPROXY=off
-
+  sudo npm install -g npm@10.5.0
   npm config set prefix ~/.local
   npm install pnpm -g
 }
