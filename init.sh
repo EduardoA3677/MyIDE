@@ -103,27 +103,59 @@ sudo_without_passwd() {
   esac
 }
 
+change_mirror_source() {
+  case "$OS_RELEASE" in
+  "Arch Linux")
+    sudo sed -i '/^Include = /s/^.*$/Server = https:\/\/mirrors.tencent.com\/archlinux\/$repo\/os\/$arch/' /etc/pacman.conf
+    echo -e '\n[archlinuxcn]\nServer = https://mirrors.tencent.com/archlinuxcn/$arch' |
+      sudo tee -a /etc/pacman.conf
+    sudo pacman-key --init
+    sudo pacman-key --populate
+    sudo pacman -Sy archlinux-keyring archlinuxcn-keyring
+    sudo pacman -Su yay base-devel openssh
+    ;;
+  "Ubuntu")
+    sudo apt -y install git curl gpg
+    sudo apt update
+    sudo apt -y upgrade
+    ;;
+  esac
+}
+
 prerequisites() {
   case "$OS_RELEASE" in
   "Arch Linux")
-    yay -S go python-pip pnpm
+    yay -S cargo go python-pip pnpm
     ;;
   "Ubuntu")
-    curl -sL https://deb.nodesource.com/setup_21.x | sudo -E bash -
+    sudo apt install software-properties-common
+    sudo apt update
     sudo apt-add-repository ppa:deadsnakes/ppa
     apt-cache search python3.10
-    sudo apt install python3.10-full
-    sudo apt -y install golang python3-pip python-is-python3 nodejs ca-certificates curl git gpg zip
+    sudo apt install python3.10-full python3-pip python-is-python3
+    curl -sL https://deb.nodesource.com/setup_21.x | sudo -E bash -
+    sudo apt -y install golang cargo nodejs
     ;;
   esac
 
-  go env -w GOPROXY=https://goproxy.io,direct
-  go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOSUMDB="sum.golang.org"
+  ask_user "Do you want to config cargo registry to utsc cloud mirror?" &&
+    mkdir -p ~/.cargo && cat >~/.cargo/config <<EOF
+[source.crates-io]
+registry = "https://github.com/rust-lang/crates.io-index"
+EOF
 
-  sudo npm install -g npm@10.5.0
+  ask_user "Do you want to set GOPROXY to tencent cloud mirror?" &&
+    go env -w GOPROXY=https://goproxy.io,direct
+  go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOSUMDB=sum.golang.org
+
+  ask_user "Do you want to config pip index-url to tencent cloud mirror?" &&
+    pip config set global.index-url https://pypi.python.org/simple/
+
+  ask_user "Do you want to config npm registry to tencent cloud mirror?" &&
+    npm config set registry https://registry.npmjs.org/
   npm config set prefix ~/.local
-  pnpm config set pnpm-prefix ~/.local
-  pnpm config set global-dir ~/.local/bin
+  npm config set global-bin-dir ~/.local/bin
+  npm install pnpm -g
 }
 
 ssh_and_git_config() {
@@ -146,17 +178,18 @@ install_docker() {
     sudo chmod a+r /etc/apt/keyrings/docker.asc
   
     # Add the repository to Apt sources:
-  echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
     sudo apt update
     sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    sudo mkdir -p /etc/docker
+    sudo usermod -aG docker $USER
     ;;
   esac
-  sudo mkdir -p /etc/docker
-  sudo usermod -aG docker $USER
+    sudo mkdir -p /etc/docker
 }
 
 tmux_conf() {
@@ -176,17 +209,22 @@ tmux_conf() {
 zsh_conf() {
   case "$OS_RELEASE" in
   "Arch Linux")
-    yay -S zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf fd-find
+    yay -S zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf fd
     ;;
   "Ubuntu")
     sudo apt -y install zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf
-    sudo apt -y install fd-find 
+    cargo install fd
     ;;
   esac
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
   [[ -e ~/.zshrc ]] && mv ~/.zshrc{,.bak}
   get_config __ZSHRC >~/.zshrc
+  cat >~/.config/proxy <<EOF
+#!/bin/bash
+sed -n '/^nameserver/{s/^nameserver\s*\([0-9.]*\)\s*$/\1:7890/; p}' /etc/resolv.conf
+EOF
+  chmod +x ~/.config/proxy
   PROMPT_INFORMATION="$PROMPT_INFORMATION$(echo -e "\e[32m======>\e[33m zsh:\e[m You may want to custom your zsh prompt theme and enable proxy prompt by modify ~/.p10k.zsh")"
 }
 
@@ -304,7 +342,7 @@ lang_go() {
     ;;
   "Ubuntu")
     go install golang.org/x/tools/gopls@latest
-    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.2
+    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
     ;;
   esac
   go install github.com/google/pprof@latest
@@ -340,7 +378,7 @@ other_cli_tools() {
     ;;
   "Ubuntu")
     sudo apt -y install neofetch cloc ncdu gnupg nmap socat cmatrix
-    sudo apt -y install lsd
+    cargo install lsd
     ;;
   esac
   git clone --recurse-submodules https://github.com/mrbeardad/SeeCheatSheets ~/.cheat
@@ -378,6 +416,7 @@ main() {
     mkdir -p ~/.config/
 
     sudo_without_passwd
+    change_mirror_source
     prerequisites
     ssh_and_git_config
     install_docker
