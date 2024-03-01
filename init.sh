@@ -341,7 +341,7 @@ lang_go() {
     ;;
   "Ubuntu")
     go install golang.org/x/tools/gopls@latest
-    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.2    
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.2
     ;;
   esac
   go install github.com/google/pprof@latest
@@ -377,7 +377,7 @@ other_cli_tools() {
     ;;
   "Ubuntu")
     sudo apt -y install neofetch cloc ncdu gnupg nmap socat cmatrix
-    cargo install lsd
+    sudo snap install lsd
     ;;
   esac
   git clone --recurse-submodules https://github.com/mrbeardad/SeeCheatSheets ~/.cheat
@@ -590,7 +590,7 @@ main "$@"
 # export PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
 #
 # # Path to your oh-my-zsh installation.
-# export ZSH="/home/beardad/.oh-my-zsh"
+# export ZSH="/home/eduardo/.oh-my-zsh"
 #
 # # Set name of the theme to load --- if set to "random", it will
 # # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -976,8 +976,8 @@ main "$@"
 
 # __GITCONFIG
 # [user]
-#     email = mrbeardad@qq.com
-#     name = Heache Bear
+#     email = ealvarado261500@gmail.com
+#     name = EduardoA3677
 # [merge]
 #     tool = vimdiff
 # [mergetool "vimdiff"]
