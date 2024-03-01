@@ -180,7 +180,7 @@ zsh_conf() {
     ;;
   "Ubuntu")
     sudo apt -y install zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf
-    cargo install fd 
+    sudo apt -y install fd-find 
     ;;
   esac
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -340,7 +340,7 @@ other_cli_tools() {
     ;;
   "Ubuntu")
     sudo apt -y install neofetch cloc ncdu gnupg nmap socat cmatrix
-    cargo install lsd
+    sudo apt -y install lsd
     ;;
   esac
   git clone --recurse-submodules https://github.com/mrbeardad/SeeCheatSheets ~/.cheat
