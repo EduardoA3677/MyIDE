@@ -170,7 +170,7 @@ tmux_conf() {
 zsh_conf() {
   case "$OS_RELEASE" in
   "Arch Linux")
-    yay -S zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf fd
+    yay -S zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf fd-find
     ;;
   "Ubuntu")
     sudo apt -y install zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf
