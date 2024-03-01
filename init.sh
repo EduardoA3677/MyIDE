@@ -174,7 +174,7 @@ zsh_conf() {
     ;;
   "Ubuntu")
     sudo apt -y install zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf
-    sudo apt -y install fd-find
+    sudo apt -y install fd-find 
     ;;
   esac
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
