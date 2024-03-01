@@ -115,8 +115,8 @@ prerequisites() {
     ;;
   esac
 
-  go env -w GOPROXY=off
-  go env -w GOPATH=$HOME/.go/ GOBIN=$HOME/.local/bin/ 
+  go env -w GOPROXY=https://goproxy.io,direct
+  go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOSUMDB="sum.golang.org"
 
   curl https://sh.rustup.rs -sSf | sh
   source "$HOME/.cargo/env"
@@ -124,8 +124,7 @@ prerequisites() {
   source "$HOME/.bashrc"
   sudo npm install -g npm@10.5.0
   curl -fsSL https://get.pnpm.io/install.sh | sh -
-  source "$HOME/.profile"
-  source "$HOME/.bashrc"
+  source /home/eduardo/.bashrc
   npm config set prefix ~/.local
   pnpm config set pnpm-prefix ~/.local
   pnpm config set global-dir ~/.local/bin
@@ -309,7 +308,7 @@ lang_go() {
     ;;
   "Ubuntu")
     go install golang.org/x/tools/gopls@latest
-    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.2
     ;;
   esac
   go install github.com/google/pprof@latest
