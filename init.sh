@@ -111,6 +111,7 @@ prerequisites() {
   "Ubuntu")
     curl -sL https://deb.nodesource.com/setup_21.x | sudo -E bash -
     sudo apt -y install golang python3-pip python-is-python3 nodejs ca-certificates curl git gpg zip
+    sudo apt-get -y python3-pip
     curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     ;;
   esac
