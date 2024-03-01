@@ -106,16 +106,16 @@ sudo_without_passwd() {
 prerequisites() {
   case "$OS_RELEASE" in
   "Arch Linux")
-    yay -S cargo go python-pip pnpm
+    yay -S go python-pip pnpm
     ;;
   "Ubuntu")
     curl -sL https://deb.nodesource.com/setup_21.x | sudo -E bash -
-    sudo apt -y install golang cargo python3-pip python-is-python3 nodejs ca-certificates curl
+    sudo apt -y install golang python3-pip python-is-python3 nodejs ca-certificates curl git gpg
     ;;
   esac
 
   go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOPROXY=off
-  sudo npm install -g npm@10.5.0
+  npm install -g npm@10.5.0
   npm config set prefix ~/.local
   npm install pnpm -g
 }
@@ -174,7 +174,7 @@ zsh_conf() {
     ;;
   "Ubuntu")
     sudo apt -y install zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf
-    cargo update fd
+    sudo apt -y install update fd
     ;;
   esac
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -245,7 +245,7 @@ neovim_conf() {
     sudo add-apt-repository ppa:neovim-ppa/unstable
     sudo apt update
     sudo apt -y install neovim unzip
-    cargo install stylua
+    sudo apt -y install install stylua
     ;;
   esac
 
@@ -334,7 +334,7 @@ other_cli_tools() {
     ;;
   "Ubuntu")
     sudo apt -y install neofetch cloc ncdu gnupg nmap socat cmatrix
-    cargo install lsd
+    sudo apt -y install lsd
     ;;
   esac
   git clone --recurse-submodules https://github.com/mrbeardad/SeeCheatSheets ~/.cheat
