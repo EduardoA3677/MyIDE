@@ -110,19 +110,24 @@ prerequisites() {
     ;;
   "Ubuntu")
     curl -sL https://deb.nodesource.com/setup_21.x | sudo -E bash -
-    sudo apt -y install golang python3-pip python-is-python3 nodejs ca-certificates curl git gpg
+    sudo apt -y install golang python3-pip python-is-python3 nodejs ca-certificates curl git gpg zip
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     ;;
   esac
 
-  go env -w GOPROXY=https://goproxy.io,direct
-  go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOSUMDB=sum.golang.org
+  go env -w GOPROXY=off
+  go env -w GOPATH=$HOME/.go/ GOBIN=$HOME/.local/bin/ 
 
   curl https://sh.rustup.rs -sSf | sh
-  source "$HOME"/.bashrc
+  source "$HOME/.cargo/env"
+  source "$HOME/.profile"
+  source "$HOME/.bashrc"
   sudo npm install -g npm@10.5.0
   curl -fsSL https://get.pnpm.io/install.sh | sh -
-  source /home/eduardo/.bashrc
+  source "$HOME/.profile"
+  source "$HOME/.bashrc"
   npm config set prefix ~/.local
+  pnpm config set pnpm-prefix ~/.local
   pnpm config set global-dir ~/.local/bin
 }
 
