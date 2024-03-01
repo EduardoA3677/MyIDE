@@ -103,29 +103,6 @@ sudo_without_passwd() {
   esac
 }
 
-change_mirror_source() {
-  case "$OS_RELEASE" in
-  "Arch Linux")
-    sudo sed -i '/^Include = /s/^.*$/Server = https:\/\/mirrors.tencent.com\/archlinux\/$repo\/os\/$arch/' /etc/pacman.conf
-    echo -e '\n[archlinuxcn]\nServer = https://mirrors.tencent.com/archlinuxcn/$arch' |
-      sudo tee -a /etc/pacman.conf
-    sudo pacman-key --init
-    sudo pacman-key --populate
-    sudo pacman -Sy archlinux-keyring archlinuxcn-keyring
-    sudo pacman -Su yay base-devel openssh
-    ;;
-  "Ubuntu")
-    sudo apt -y install git curl gpg
-    ask_user "Do you want to change apt mirror source to tencent cloud?" || return 0
-    sudo curl -Lo /etc/apt/sources.list http://mirrors.cloud.tencent.com/repo/ubuntu20_sources.list
-    sudo apt update
-    sudo apt -y upgrade
-    ask_user "Do you want yo upgrade to ubuntu22.04 STL?" || return 0
-    sudo do-release-upgrade -d
-    ;;
-  esac
-}
-
 prerequisites() {
   case "$OS_RELEASE" in
   "Arch Linux")
@@ -133,30 +110,13 @@ prerequisites() {
     ;;
   "Ubuntu")
     curl -sL https://deb.nodesource.com/setup_21.x | sudo -E bash -
-    sudo apt -y install golang cargo python3-pip python-is-python3 nodejs
+    sudo apt -y install golang cargo python3-pip python-is-python3 nodejs ca-certificates curl
     ;;
   esac
 
-  ask_user "Do you want to config cargo registry to utsc cloud mirror?" &&
-    mkdir -p ~/.cargo && cat >~/.cargo/config <<EOF
-[source.crates-io]
-registry = "https://github.com/rust-lang/crates.io-index"
-replace-with = 'ustc'
-[source.ustc]
-registry = "git://mirrors.ustc.edu.cn/crates.io-index"
-EOF
+  go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOPROXY=off
 
-  ask_user "Do you want to set GOPROXY to tencent cloud mirror?" &&
-    go env -w GOPROXY=https://mirrors.tencent.com/go/,direct
-  go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOSUMDB=sum.golang.google.cn
-
-  ask_user "Do you want to config pip index-url to tencent cloud mirror?" &&
-    pip config set global.index-url https://mirrors.tencent.com/pypi/simple
-
-  ask_user "Do you want to config npm registry to tencent cloud mirror?" &&
-    npm config set registry http://mirrors.tencent.com/npm/
   npm config set prefix ~/.local
-  npm config set global-bin-dir ~/.local/bin
   npm install pnpm -g
 }
 
@@ -175,22 +135,22 @@ install_docker() {
     yay -S docker
     ;;
   "Ubuntu")
-    ask_user "Do you want to install docker from tencent cloud mirror" || return
-    curl -fsSL https://mirrors.cloud.tencent.com/docker-ce/linux/ubuntu/gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/docker-ce-archive-keyring.gpg
-    echo "deb [arch=amd64] https://mirrors.cloud.tencent.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker-ce.list
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+  
+    # Add the repository to Apt sources:
+  echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
     sudo apt update
-    sudo apt -y install docker-ce docker-ce-cli containerd.io
+    sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     ;;
   esac
   sudo mkdir -p /etc/docker
-  cat <<EOF | sudo tee /etc/docker/daemon.json
-{
-  "registry-mirrors": [
-    "https://hub-mirror.c.163.com",
-    "https://mirror.baidubce.com"
-  ]
-}
-EOF
+  sudo usermod -aG docker $USER
 }
 
 tmux_conf() {
@@ -221,11 +181,6 @@ zsh_conf() {
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
   [[ -e ~/.zshrc ]] && mv ~/.zshrc{,.bak}
   get_config __ZSHRC >~/.zshrc
-  cat >~/.config/proxy <<EOF
-#!/bin/bash
-sed -n '/^nameserver/{s/^nameserver\s*\([0-9.]*\)\s*$/\1:7890/; p}' /etc/resolv.conf
-EOF
-  chmod +x ~/.config/proxy
   PROMPT_INFORMATION="$PROMPT_INFORMATION$(echo -e "\e[32m======>\e[33m zsh:\e[m You may want to custom your zsh prompt theme and enable proxy prompt by modify ~/.p10k.zsh")"
 }
 
