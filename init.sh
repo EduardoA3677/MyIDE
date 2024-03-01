@@ -115,9 +115,13 @@ prerequisites() {
   esac
 
   go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOPROXY=off
-  npm install -g npm@10.5.0
+  curl https://sh.rustup.rs -sSf | sh
+  source ~/.bashrc
+  sudo npm install -g npm@10.5.0
+  curl -fsSL https://get.pnpm.io/install.sh | sh -
+  source ~/.bashrc
   npm config set prefix ~/.local
-  npm install pnpm -g
+  pnpm config set global-dir ~/.local/bin
 }
 
 ssh_and_git_config() {
@@ -174,7 +178,7 @@ zsh_conf() {
     ;;
   "Ubuntu")
     sudo apt -y install zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf
-    sudo apt -y install fd-find 
+    cargo install fd 
     ;;
   esac
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -334,7 +338,7 @@ other_cli_tools() {
     ;;
   "Ubuntu")
     sudo apt -y install neofetch cloc ncdu gnupg nmap socat cmatrix
-    sudo apt -y install lsd
+    cargo install lsd
     ;;
   esac
   git clone --recurse-submodules https://github.com/mrbeardad/SeeCheatSheets ~/.cheat
