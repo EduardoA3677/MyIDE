@@ -118,10 +118,10 @@ prerequisites() {
   go env -w GOPATH="$HOME"/.go/ GOBIN="$HOME"/.local/bin/ GOSUMDB=sum.golang.org
 
   curl https://sh.rustup.rs -sSf | sh
-  source ~/.bashrc
+  source "$HOME"/.bashrc
   sudo npm install -g npm@10.5.0
   curl -fsSL https://get.pnpm.io/install.sh | sh -
-  source ~/.bashrc
+  source "$HOME"/.bashrc
   npm config set prefix ~/.local
   pnpm config set global-dir ~/.local/bin
 }
