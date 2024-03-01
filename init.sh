@@ -174,7 +174,7 @@ zsh_conf() {
     ;;
   "Ubuntu")
     sudo apt -y install zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf
-    cargo install fd
+    cargo update fd
     ;;
   esac
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
