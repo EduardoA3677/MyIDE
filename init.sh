@@ -245,7 +245,7 @@ neovim_conf() {
     sudo add-apt-repository ppa:neovim-ppa/unstable
     sudo apt update
     sudo apt -y install neovim unzip
-    sudo apt -y install install stylua
+    cargo install stylua
     ;;
   esac
 
