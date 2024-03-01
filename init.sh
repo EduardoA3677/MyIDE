@@ -154,13 +154,12 @@ EOF
   ask_user "Do you want to config npm registry to tencent cloud mirror?" &&
     npm config set registry https://registry.npmjs.org/
   npm config set prefix ~/.local
-  npm config set global-bin-dir ~/.local/bin
   npm install pnpm -g
 }
 
 ssh_and_git_config() {
   # only for myself
-  if [[ "$USER" == beardad ]]; then
+  if [[ "$USER" == eduardo ]]; then
     get_config __GITCONFIG >~/.gitconfig
     mkdir -p ~/.ssh/
     get_config __SSH_CONFIG >~/.ssh/config
@@ -213,7 +212,7 @@ zsh_conf() {
     ;;
   "Ubuntu")
     sudo apt -y install zsh zsh-syntax-highlighting zsh-autosuggestions autojump fzf
-    cargo install fd
+    cargo install fd-find
     ;;
   esac
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -342,7 +341,7 @@ lang_go() {
     ;;
   "Ubuntu")
     go install golang.org/x/tools/gopls@latest
-    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.2    
     ;;
   esac
   go install github.com/google/pprof@latest
